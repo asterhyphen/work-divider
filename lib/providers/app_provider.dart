@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowdabattery/data/schedule_data.dart';
+import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/utils/storage.dart';
-
-/// Task status enum used across the app.
-enum TaskStatus {
-  none,            // Not started
-  pendingApproval, // User submitted, awaiting leader approval
-  approved,        // Leader approved
-  rejected,        // Leader rejected
-}
 
 /// Central state management for HouseCycle.
 class AppProvider extends ChangeNotifier {
@@ -17,6 +10,7 @@ class AppProvider extends ChangeNotifier {
 
   String? get currentUser => _currentUser;
   int get currentWeek => _currentWeek;
+  int get currentWeekNumber => _currentWeek;
 
   bool get isLeader =>
       _currentUser != null &&
@@ -66,7 +60,11 @@ class AppProvider extends ChangeNotifier {
   Future<void> submitTaskForApproval(String task) async {
     if (_currentUser == null) return;
     await Storage.setTaskStatus(
-        _currentWeek, _currentUser!, task, 'pending_approval');
+      _currentWeek,
+      _currentUser!,
+      task,
+      'pending_approval',
+    );
     notifyListeners();
   }
 
@@ -77,7 +75,8 @@ class AppProvider extends ChangeNotifier {
     // Update streak
     final tasks = ScheduleData.getUserTasks(user, _currentWeek);
     final allApproved = tasks.every(
-        (t) => getTaskStatus(user, t) == TaskStatus.approved);
+      (t) => getTaskStatus(user, t) == TaskStatus.approved,
+    );
     if (allApproved) {
       final currentStreak = Storage.getStreak(user);
       await Storage.setStreak(user, currentStreak + 1);
