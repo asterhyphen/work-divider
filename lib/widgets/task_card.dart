@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/data/schedule_data.dart';
+import 'package:meowdabattery/widgets/glass_container.dart';
 
 /// Beautiful task card with status, animations, and gradient accents.
 class TaskCard extends StatelessWidget {
@@ -55,37 +56,38 @@ class TaskCard extends StatelessWidget {
 
   String get _emoji => ScheduleData.taskIcons[_displayName] ?? '📋';
 
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onStatusChange,
-      child: AnimatedContainer(
+      child: GlassContainer(
         duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOutCubic,
         margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: AppColors.bgCard,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: status == TaskStatus.approved
-                ? AppColors.accentGreen.withValues(alpha: 0.3)
-                : isOverdue
-                ? AppColors.accentRed.withValues(alpha: 0.3)
-                : AppColors.divider.withValues(alpha: 0.3),
-            width: 1,
-          ),
-          boxShadow: [
-            if (status == TaskStatus.approved)
-              BoxShadow(
-                color: AppColors.accentGreen.withValues(alpha: 0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-          ],
+        color: AppColors.bgCard.withValues(alpha: 0.4),
+        blur: 15,
+        border: Border.all(
+          color: status == TaskStatus.approved
+              ? AppColors.accentGreen.withValues(alpha: 0.3)
+              : isOverdue
+              ? AppColors.accentRed.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.08),
+          width: 1,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+        boxShadow: [
+          if (status == TaskStatus.approved)
+            BoxShadow(
+              color: AppColors.accentGreen.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+        ],
+        padding: const EdgeInsets.all(16),
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
