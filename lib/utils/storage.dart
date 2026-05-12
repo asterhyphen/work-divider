@@ -25,7 +25,11 @@ class Storage {
   }
 
   static Future<void> setTaskStatus(
-      int week, String user, String task, String status) {
+    int week,
+    String user,
+    String task,
+    String status,
+  ) {
     return prefs.setString('task_${week}_${user}_$task', status);
   }
 
@@ -45,5 +49,51 @@ class Storage {
 
   static Future<void> setLastProcessedWeek(int week) {
     return prefs.setInt('last_processed_week', week);
+  }
+
+  static Map<String, Object?> getSharedState() {
+    final state = <String, Object?>{};
+    for (final key in prefs.getKeys()) {
+      if (_isSharedKey(key)) {
+        state[key] = prefs.get(key);
+      }
+    }
+    return state;
+  }
+
+  static Future<bool> applySharedState(Map<String, Object?> state) async {
+    var changed = false;
+
+    for (final entry in state.entries) {
+      if (!_isSharedKey(entry.key)) continue;
+
+      final current = prefs.get(entry.key);
+      final value = entry.value;
+      if (current == value) continue;
+
+      changed = true;
+      if (value is int) {
+        await prefs.setInt(entry.key, value);
+      } else if (value is bool) {
+        await prefs.setBool(entry.key, value);
+      } else if (value is double) {
+        await prefs.setDouble(entry.key, value);
+      } else if (value is String) {
+        await prefs.setString(entry.key, value);
+      } else if (value is List) {
+        await prefs.setStringList(
+          entry.key,
+          value.map((item) => item.toString()).toList(),
+        );
+      }
+    }
+
+    return changed;
+  }
+
+  static bool _isSharedKey(String key) {
+    return key.startsWith('task_') ||
+        key.startsWith('streak_') ||
+        key == 'last_processed_week';
   }
 }

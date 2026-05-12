@@ -1,7 +1,7 @@
-/// All hardcoded schedule data for HouseCycle.
-/// Leader is ALWAYS the person assigned to Outside 2.
-/// Main Bathroom rotates ONLY: Amaan, Ahmed, Shaaz, Ayanuddin
-/// Other Bathroom rotates ONLY: Wasiq, Asfan, Ayaan
+// All hardcoded schedule data for HouseCycle.
+// Leader is ALWAYS the person assigned to Outside 2.
+// Main Bathroom rotates ONLY: Amaan, Ahmed, Shaaz, Ayanuddin
+// Other Bathroom rotates ONLY: Wasiq, Asfan, Ayaan
 
 class ScheduleData {
   static const List<String> allUsers = [
@@ -24,24 +24,14 @@ class ScheduleData {
     'Outside 2',
   ];
 
-  static const Map<String, String> taskIcons = {
-    'Main Bathroom': '🛁',
-    'Other Bathroom': '🚿',
-    'Big Hall': '🏛️',
-    'Side Hall': '🚪',
-    'Kitchen': '🍳',
-    'Outside 1': '🌿',
-    'Outside 2': '👑',
-  };
-
   static const Map<String, String> completionMessages = {
-    'Main Bathroom': 'Bathroom survived another war. 🛁',
-    'Other Bathroom': 'Fresh and clean. Victory! 🚿',
-    'Big Hall': 'Hall shining like moonlight. ✨',
-    'Side Hall': 'Side hall? More like SHINE hall. 💫',
-    'Kitchen': 'Kitchen conquered. 🍳',
-    'Outside 1': 'The great outdoors… cleaned. 🌿',
-    'Outside 2': 'Leading AND cleaning. Respect. 👑',
+    'Main Bathroom': 'Bathroom survived another war.',
+    'Other Bathroom': 'Fresh and clean. Victory!',
+    'Big Hall': 'Hall shining like moonlight.',
+    'Side Hall': 'Side hall? More like SHINE hall.',
+    'Kitchen': 'Kitchen conquered.',
+    'Outside 1': 'The great outdoors cleaned.',
+    'Outside 2': 'Leading AND cleaning. Respect.',
   };
 
   /// Each week: leader + 6 task assignments.
@@ -179,13 +169,13 @@ class ScheduleData {
 
     if (weekday < 5) return 'Due Sunday Evening';
     if (weekday == 5 && hour < 18) return 'Due Sunday Evening';
-    if (weekday == 5) return '⚠️ Weekend started — get it done!';
-    if (weekday == 6 && hour < 14) return '⚠️ Saturday — time to clean!';
-    if (weekday == 6) return '⚠️ Saturday afternoon — hurry up!';
-    if (weekday == 7 && hour < 9) return '🔴 Sunday morning — last chance!';
-    if (weekday == 7 && hour < 18) return '🔴 Sunday — deadline approaching!';
-    if (weekday == 7 && hour < 22) return '🔴 FINAL HOURS!';
-    return '❌ OVERDUE';
+    if (weekday == 5) return 'Weekend started - get it done!';
+    if (weekday == 6 && hour < 14) return 'Saturday - time to clean!';
+    if (weekday == 6) return 'Saturday afternoon - hurry up!';
+    if (weekday == 7 && hour < 9) return 'Sunday morning - last chance!';
+    if (weekday == 7 && hour < 18) return 'Sunday - deadline approaching!';
+    if (weekday == 7 && hour < 22) return 'FINAL HOURS!';
+    return 'OVERDUE';
   }
 
   /// Check if the task is overdue (past Sunday 10 PM).

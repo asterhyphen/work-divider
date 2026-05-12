@@ -68,7 +68,9 @@ class AppGradients {
 
 class AppTheme {
   static ThemeData get darkTheme {
-    final baseTextTheme = GoogleFonts.interTextTheme(ThemeData.dark().textTheme);
+    final baseTextTheme = GoogleFonts.interTextTheme(
+      ThemeData.dark().textTheme,
+    );
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -120,9 +122,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.bgCard,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

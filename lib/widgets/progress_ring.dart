@@ -40,12 +40,14 @@ class ProgressRing extends StatelessWidget {
                   progress: value,
                   strokeWidth: strokeWidth,
                   trackColor:
-                      trackColor ?? AppColors.bgCardLight.withValues(alpha: 0.5),
-                  gradientColors: gradientColors ??
+                      trackColor ??
+                      AppColors.bgCardLight.withValues(alpha: 0.5),
+                  gradientColors:
+                      gradientColors ??
                       [AppColors.accentPurple, AppColors.accentBlue],
                 ),
               ),
-              if (child != null) child!,
+              if (child case final child?) child,
             ],
           ),
         );
@@ -94,13 +96,7 @@ class _RingPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round;
 
-      canvas.drawArc(
-        rect,
-        -pi / 2,
-        2 * pi * progress,
-        false,
-        progressPaint,
-      );
+      canvas.drawArc(rect, -pi / 2, 2 * pi * progress, false, progressPaint);
     }
   }
 

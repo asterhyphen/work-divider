@@ -25,17 +25,16 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..addListener(() {
-        setState(() {
-          for (final p in _particles) {
-            p.update();
-          }
-          _particles.removeWhere((p) => p.y > 1.2);
-        });
-      });
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 4))
+          ..addListener(() {
+            setState(() {
+              for (final p in _particles) {
+                p.update();
+              }
+              _particles.removeWhere((p) => p.y > 1.2);
+            });
+          });
   }
 
   @override
@@ -49,16 +48,18 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
   void _startConfetti() {
     _particles.clear();
     for (int i = 0; i < 80; i++) {
-      _particles.add(_Particle(
-        x: _random.nextDouble(),
-        y: -_random.nextDouble() * 0.5,
-        vx: (_random.nextDouble() - 0.5) * 0.015,
-        vy: _random.nextDouble() * 0.012 + 0.005,
-        rotation: _random.nextDouble() * 2 * pi,
-        rotationSpeed: (_random.nextDouble() - 0.5) * 0.15,
-        size: _random.nextDouble() * 8 + 4,
-        color: _randomColor(),
-      ));
+      _particles.add(
+        _Particle(
+          x: _random.nextDouble(),
+          y: -_random.nextDouble() * 0.5,
+          vx: (_random.nextDouble() - 0.5) * 0.015,
+          vy: _random.nextDouble() * 0.012 + 0.005,
+          rotation: _random.nextDouble() * 2 * pi,
+          rotationSpeed: (_random.nextDouble() - 0.5) * 0.15,
+          size: _random.nextDouble() * 8 + 4,
+          color: _randomColor(),
+        ),
+      );
     }
     _controller.forward(from: 0);
   }
@@ -91,9 +92,7 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
         if (_particles.isNotEmpty)
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(
-                painter: _ConfettiPainter(_particles),
-              ),
+              child: CustomPaint(painter: _ConfettiPainter(_particles)),
             ),
           ),
       ],
@@ -137,7 +136,11 @@ class _ConfettiPainter extends CustomPainter {
       canvas.rotate(p.rotation);
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.6),
+          Rect.fromCenter(
+            center: Offset.zero,
+            width: p.size,
+            height: p.size * 0.6,
+          ),
           const Radius.circular(1.5),
         ),
         paint,

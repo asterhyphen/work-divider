@@ -113,9 +113,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               alignment: Alignment.center,
-                              child: const Text(
-                                '✅',
-                                style: TextStyle(fontSize: 40),
+                              child: const Icon(
+                                Icons.verified_rounded,
+                                color: AppColors.accentGreen,
+                                size: 42,
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -240,7 +241,11 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                     color: AppColors.accentOrange.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text('⏳', style: TextStyle(fontSize: 14)),
+                  child: const Icon(
+                    Icons.hourglass_top_rounded,
+                    color: AppColors.accentOrange,
+                    size: 16,
+                  ),
                 ),
               ],
             ),
@@ -257,9 +262,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () async {
+                      final messenger = ScaffoldMessenger.of(context);
                       await provider.rejectTask(user, task);
                       if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         SnackBar(
                           content: Text('$task rejected for $user'),
                           backgroundColor: AppColors.accentRed,
@@ -300,9 +306,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () async {
+                      final messenger = ScaffoldMessenger.of(context);
                       await provider.approveTask(user, task);
                       if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         SnackBar(
                           content: Text('$task approved for $user'),
                           backgroundColor: AppColors.accentGreen,

@@ -94,9 +94,16 @@ class _HomeScreenState extends State<HomeScreen>
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    Icon(
+                                      Icons.workspace_premium_rounded,
+                                      color: Color(0xFF1a1a1a),
+                                      size: 15,
+                                    ),
+                                    SizedBox(width: 5),
                                     Text(
-                                      '👑 Leader',
+                                      'Leader',
                                       style: TextStyle(
                                         color: Color(0xFF1a1a1a),
                                         fontSize: 12,
@@ -114,23 +121,31 @@ class _HomeScreenState extends State<HomeScreen>
                                   Navigator.push(
                                     context,
                                     PageRouteBuilder(
-                                      pageBuilder: (_, __, ___) =>
-                                          const LeaderDashboard(),
+                                      pageBuilder:
+                                          (
+                                            context,
+                                            animation,
+                                            secondaryAnimation,
+                                          ) => const LeaderDashboard(),
                                       transitionsBuilder:
-                                          (_, anim, __, child) =>
-                                              SlideTransition(
-                                                position:
-                                                    Tween(
-                                                      begin: const Offset(1, 0),
-                                                      end: Offset.zero,
-                                                    ).animate(
-                                                      CurvedAnimation(
-                                                        parent: anim,
-                                                        curve: Curves.easeOut,
-                                                      ),
-                                                    ),
-                                                child: child,
-                                              ),
+                                          (
+                                            context,
+                                            anim,
+                                            secondaryAnimation,
+                                            child,
+                                          ) => SlideTransition(
+                                            position:
+                                                Tween(
+                                                  begin: const Offset(1, 0),
+                                                  end: Offset.zero,
+                                                ).animate(
+                                                  CurvedAnimation(
+                                                    parent: anim,
+                                                    curve: Curves.easeOut,
+                                                  ),
+                                                ),
+                                            child: child,
+                                          ),
                                       transitionDuration: const Duration(
                                         milliseconds: 300,
                                       ),
@@ -259,7 +274,21 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('🎉', style: TextStyle(fontSize: 48)),
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: AppColors.accentGreen.withValues(
+                                  alpha: 0.1,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Icon(
+                                Icons.celebration_rounded,
+                                color: AppColors.accentGreen,
+                                size: 44,
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             const Text(
                               'No tasks assigned this week!',

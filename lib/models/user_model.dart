@@ -1,18 +1,20 @@
+import 'package:flutter/material.dart';
+
 /// User model for HouseCycle roommates.
 class UserModel {
   final String name;
-  final String emoji;
+  final IconData icon;
 
-  const UserModel({required this.name, required this.emoji});
+  const UserModel({required this.name, required this.icon});
 
   static const List<UserModel> allUsers = [
-    UserModel(name: 'Asfan', emoji: '🧑‍🦱'),
-    UserModel(name: 'Ahmed', emoji: '👨‍💼'),
-    UserModel(name: 'Ayanuddin', emoji: '👨‍🎓'),
-    UserModel(name: 'Ayaan', emoji: '🧑‍🎨'),
-    UserModel(name: 'Amaan', emoji: '👨‍🔧'),
-    UserModel(name: 'Shaaz', emoji: '👨‍💻'),
-    UserModel(name: 'Wasiq', emoji: '🧑‍🍳'),
+    UserModel(name: 'Asfan', icon: Icons.person_rounded),
+    UserModel(name: 'Ahmed', icon: Icons.badge_rounded),
+    UserModel(name: 'Ayanuddin', icon: Icons.school_rounded),
+    UserModel(name: 'Ayaan', icon: Icons.palette_rounded),
+    UserModel(name: 'Amaan', icon: Icons.handyman_rounded),
+    UserModel(name: 'Shaaz', icon: Icons.code_rounded),
+    UserModel(name: 'Wasiq', icon: Icons.restaurant_rounded),
   ];
 
   static UserModel getUser(String name) =>

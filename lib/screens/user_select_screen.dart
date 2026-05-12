@@ -34,17 +34,19 @@ class UserSelectScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  AppColors.accentPurple.withValues(alpha: 0.3),
+                              color: AppColors.accentPurple.withValues(
+                                alpha: 0.3,
+                              ),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
                           ],
                         ),
                         alignment: Alignment.center,
-                        child: const Text(
-                          '🏠',
-                          style: TextStyle(fontSize: 30),
+                        child: const Icon(
+                          Icons.home_rounded,
+                          color: Colors.white,
+                          size: 32,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -93,11 +95,11 @@ class UserSelectScreen extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 14,
-                      mainAxisSpacing: 14,
-                      childAspectRatio: 1.3,
-                    ),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 1.3,
+                        ),
                     itemCount: ScheduleData.allUsers.length,
                     itemBuilder: (context, index) {
                       final name = ScheduleData.allUsers[index];
@@ -114,7 +116,9 @@ class UserSelectScreen extends StatelessWidget {
                 Center(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.bgCard,
                       borderRadius: BorderRadius.circular(12),
@@ -146,8 +150,9 @@ class UserSelectScreen extends StatelessWidget {
     provider.selectUser(name);
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const HomeScreen(),
-        transitionsBuilder: (_, anim, __, child) {
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const HomeScreen(),
+        transitionsBuilder: (context, anim, secondaryAnimation, child) {
           return FadeTransition(
             opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
             child: SlideTransition(

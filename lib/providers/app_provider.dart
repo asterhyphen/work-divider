@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/models/task_status.dart';
+import 'package:meowdabattery/utils/remote_sync.dart';
 import 'package:meowdabattery/utils/storage.dart';
 
 /// Central state management for HouseCycle.
 class AppProvider extends ChangeNotifier {
   String? _currentUser;
   int _currentWeek = 1;
+  final RemoteSync _remoteSync = RemoteSync();
 
   String? get currentUser => _currentUser;
   int get currentWeek => _currentWeek;
@@ -22,6 +24,8 @@ class AppProvider extends ChangeNotifier {
   Future<void> init() async {
     _currentUser = Storage.getCurrentUser();
     _currentWeek = ScheduleData.getCurrentWeekNumber();
+    await _remoteSync.pull();
+    _remoteSync.startPolling(notifyListeners);
     notifyListeners();
   }
 
@@ -65,6 +69,7 @@ class AppProvider extends ChangeNotifier {
       task,
       'pending_approval',
     );
+    await _remoteSync.push();
     notifyListeners();
   }
 
@@ -82,12 +87,14 @@ class AppProvider extends ChangeNotifier {
       await Storage.setStreak(user, currentStreak + 1);
     }
 
+    await _remoteSync.push();
     notifyListeners();
   }
 
   /// Leader rejects a task.
   Future<void> rejectTask(String user, String task) async {
     await Storage.setTaskStatus(_currentWeek, user, task, 'rejected');
+    await _remoteSync.push();
     notifyListeners();
   }
 
@@ -145,5 +152,11 @@ class AppProvider extends ChangeNotifier {
       _currentWeek = newWeek;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _remoteSync.dispose();
+    super.dispose();
   }
 }

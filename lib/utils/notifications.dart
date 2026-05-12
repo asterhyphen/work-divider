@@ -21,7 +21,7 @@ class NotificationService {
     // Friday 6 PM (18:00)
     await _scheduleWeeklyNotification(
       id: 1,
-      title: 'HouseCycle Reminder 🏠',
+      title: 'HouseCycle Reminder',
       body: 'Your task awaits. Weekend is coming!',
       weekday: DateTime.friday,
       hour: 18,
@@ -31,7 +31,7 @@ class NotificationService {
     // Saturday 2 PM (14:00)
     await _scheduleWeeklyNotification(
       id: 2,
-      title: 'HouseCycle Reminder 🏠',
+      title: 'HouseCycle Reminder',
       body: 'Saturday afternoon — time to get it done!',
       weekday: DateTime.saturday,
       hour: 14,
@@ -41,7 +41,7 @@ class NotificationService {
     // Sunday 9 AM (09:00)
     await _scheduleWeeklyNotification(
       id: 3,
-      title: 'HouseCycle Reminder 🏠',
+      title: 'HouseCycle Reminder',
       body: 'Last day! Submit your completion by tonight.',
       weekday: DateTime.sunday,
       hour: 9,
@@ -51,7 +51,7 @@ class NotificationService {
     // Sunday 6 PM (18:00)
     await _scheduleWeeklyNotification(
       id: 4,
-      title: 'HouseCycle Urgent 🔴',
+      title: 'HouseCycle Urgent',
       body: 'Final hours! Get it submitted now.',
       weekday: DateTime.sunday,
       hour: 18,
@@ -61,7 +61,7 @@ class NotificationService {
     // Sunday 11 PM (23:00) - overdue reminder
     await _scheduleWeeklyNotification(
       id: 5,
-      title: 'HouseCycle Overdue ❌',
+      title: 'HouseCycle Overdue',
       body: 'Task is now overdue. Leader will handle it.',
       weekday: DateTime.sunday,
       hour: 23,

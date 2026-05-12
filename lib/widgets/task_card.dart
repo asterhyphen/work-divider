@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/data/schedule_data.dart';
+import 'package:meowdabattery/theme/app_icons.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 
 /// Beautiful task card with status, animations, and gradient accents.
@@ -54,8 +55,9 @@ class TaskCard extends StatelessWidget {
 
   String get _displayName => taskName ?? task ?? 'Task';
 
-  String get _emoji => ScheduleData.taskIcons[_displayName] ?? '📋';
+  IconData get _taskIcon => AppIcons.task(_displayName);
 
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onStatusChange,
@@ -73,123 +75,122 @@ class TaskCard extends StatelessWidget {
           width: 1,
         ),
         boxShadow: [
-          if (status == TaskStatus.approved)
-            BoxShadow(
-              color: AppColors.accentGreen.withValues(alpha: 0.08),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            )
-          else
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            ),
+          status == TaskStatus.approved
+              ? BoxShadow(
+                  color: AppColors.accentGreen.withValues(alpha: 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                )
+              : BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
         ],
         padding: const EdgeInsets.all(16),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  // Task emoji
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.bgCardLight,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(_emoji, style: const TextStyle(fontSize: 22)),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgCardLight,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  const SizedBox(width: 14),
-                  // Task name and user
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  alignment: Alignment.center,
+                  child: Icon(
+                    _taskIcon,
+                    color: AppColors.accentPurpleLight,
+                    size: 23,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Task name and user
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _displayName,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (showUser && assignedTo != null) ...[
+                        const SizedBox(height: 2),
                         Text(
-                          _displayName,
+                          assignedTo!,
                           style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
                           ),
                         ),
-                        if (showUser && assignedTo != null) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            assignedTo!,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
                       ],
-                    ),
+                    ],
                   ),
-                  // Status badge
-                  _StatusBadge(
-                    color: _statusColor,
-                    icon: _statusIcon,
-                    text: _statusText,
+                ),
+                // Status badge
+                _StatusBadge(
+                  color: _statusColor,
+                  icon: _statusIcon,
+                  text: _statusText,
+                ),
+              ],
+            ),
+            if (status == TaskStatus.approved) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.accentGreen.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  ScheduleData.completionMessages[_displayName] ??
+                      'Task completed!',
+                  style: TextStyle(
+                    color: AppColors.accentGreen.withValues(alpha: 0.9),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
+                ),
               ),
-              // Completion message
-              if (status == TaskStatus.approved) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGreen.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(10),
+            ],
+            if (onAction != null) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: onAction,
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.accentPurple.withValues(
+                      alpha: 0.12,
+                    ),
+                    foregroundColor: AppColors.accentPurpleLight,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
-                    ScheduleData.completionMessages[_displayName] ??
-                        'Task completed! 🎉',
-                    style: TextStyle(
-                      color: AppColors.accentGreen.withValues(alpha: 0.9),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                    actionLabel ?? 'I finished my work ✓',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
                     ),
                   ),
                 ),
-              ],
-              // Action button
-              if (onAction != null) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: onAction,
-                    style: TextButton.styleFrom(
-                      backgroundColor: AppColors.accentPurple.withValues(
-                        alpha: 0.12,
-                      ),
-                      foregroundColor: AppColors.accentPurpleLight,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      actionLabel ?? 'I finished my work ✓',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );

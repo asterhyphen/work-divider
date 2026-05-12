@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
+import 'package:meowdabattery/theme/app_icons.dart';
 
 /// User selection card for the "Who are you?" screen.
 class UserCard extends StatefulWidget {
@@ -42,12 +43,14 @@ class _UserCardState extends State<UserCard>
       vsync: this,
       duration: Duration(milliseconds: 500 + widget.index * 80),
     );
-    _scaleAnim = Tween(begin: 0.7, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
-    _fadeAnim = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _scaleAnim = Tween(
+      begin: 0.7,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _fadeAnim = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
   }
 
@@ -67,10 +70,7 @@ class _UserCardState extends State<UserCard>
       builder: (context, child) {
         return Opacity(
           opacity: _fadeAnim.value,
-          child: Transform.scale(
-            scale: _scaleAnim.value,
-            child: child,
-          ),
+          child: Transform.scale(scale: _scaleAnim.value, child: child),
         );
       },
       child: GestureDetector(
@@ -124,13 +124,10 @@ class _UserCardState extends State<UserCard>
                       ],
                     ),
                     alignment: Alignment.center,
-                    child: Text(
-                      widget.name[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    child: Icon(
+                      AppIcons.user(widget.index),
+                      color: Colors.white,
+                      size: 28,
                     ),
                   ),
                   const SizedBox(height: 12),

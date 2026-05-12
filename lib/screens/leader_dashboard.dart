@@ -126,7 +126,11 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
             ),
           ),
           const SizedBox(width: 14),
-          const Text('👑', style: TextStyle(fontSize: 22)),
+          const Icon(
+            Icons.workspace_premium_rounded,
+            color: AppColors.accentGold,
+            size: 24,
+          ),
           const SizedBox(width: 8),
           const Text(
             'Leader Dashboard',
@@ -149,12 +153,13 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
     int approved = 0, pendingA = 0, notStarted = 0;
     for (final e in assignments.entries) {
       final s = provider.getTaskStatus(e.value, e.key);
-      if (s == TaskStatus.approved)
+      if (s == TaskStatus.approved) {
         approved++;
-      else if (s == TaskStatus.pendingApproval)
+      } else if (s == TaskStatus.pendingApproval) {
         pendingA++;
-      else
+      } else {
         notStarted++;
+      }
     }
 
     return Container(
@@ -185,11 +190,26 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                _statRow('✅', 'Completed', '$approved'),
+                _statRow(
+                  Icons.check_circle_rounded,
+                  AppColors.accentGreen,
+                  'Completed',
+                  '$approved',
+                ),
                 const SizedBox(height: 6),
-                _statRow('⏳', 'Pending', '$pendingA'),
+                _statRow(
+                  Icons.hourglass_top_rounded,
+                  AppColors.accentOrange,
+                  'Pending',
+                  '$pendingA',
+                ),
                 const SizedBox(height: 6),
-                _statRow('⬜', 'Not Started', '$notStarted'),
+                _statRow(
+                  Icons.radio_button_unchecked_rounded,
+                  AppColors.textMuted,
+                  'Not Started',
+                  '$notStarted',
+                ),
               ],
             ),
           ),
@@ -215,10 +235,10 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
     );
   }
 
-  Widget _statRow(String emoji, String label, String value) {
+  Widget _statRow(IconData icon, Color color, String label, String value) {
     return Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 14)),
+        Icon(icon, size: 15, color: color),
         const SizedBox(width: 8),
         Text(
           label,

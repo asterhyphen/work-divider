@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Task completion status enum.
 enum TaskStatus {
   none, // Not started
@@ -14,10 +16,10 @@ extension TaskStatusExt on TaskStatus {
     TaskStatus.rejected => 'Rejected',
   };
 
-  String get emoji => switch (this) {
-    TaskStatus.none => '⭕',
-    TaskStatus.pendingApproval => '⏳',
-    TaskStatus.approved => '✅',
-    TaskStatus.rejected => '❌',
+  IconData get icon => switch (this) {
+    TaskStatus.none => Icons.radio_button_unchecked_rounded,
+    TaskStatus.pendingApproval => Icons.hourglass_top_rounded,
+    TaskStatus.approved => Icons.check_circle_rounded,
+    TaskStatus.rejected => Icons.cancel_rounded,
   };
 }
