@@ -7,8 +7,8 @@ import 'package:meowdabattery/utils/storage.dart';
 /// Optional insecure shared sync.
 ///
 /// Configure with:
-/// --dart-define=HOUSECYCLE_SYNC_URL=https://api.jsonbin.io/v3/b/<bin-id>
-/// --dart-define=HOUSECYCLE_SYNC_KEY=<jsonbin-master-key>
+/// --dart-define=HOUSECYCLE_SYNC_URL=https://api.jsonbin.io/v3/b/YOUR_BIN_ID
+/// --dart-define=HOUSECYCLE_SYNC_KEY=YOUR_JSONBIN_MASTER_KEY
 ///
 /// The app still works locally when these values are not provided.
 class RemoteSync {

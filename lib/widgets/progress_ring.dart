@@ -47,7 +47,7 @@ class ProgressRing extends StatelessWidget {
                       [AppColors.accentPurple, AppColors.accentBlue],
                 ),
               ),
-              if (child case final child?) child,
+              ?child,
             ],
           ),
         );

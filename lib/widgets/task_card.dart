@@ -41,8 +41,8 @@ class TaskCard extends StatelessWidget {
   String get _statusText => switch (status) {
     TaskStatus.none => isOverdue ? 'OVERDUE' : 'Not Started',
     TaskStatus.pendingApproval => 'Awaiting Approval',
-    TaskStatus.approved => 'Completed ✓',
-    TaskStatus.rejected => 'Rejected — Redo',
+    TaskStatus.approved => 'Completed',
+    TaskStatus.rejected => 'Rejected - Redo',
   };
 
   IconData get _statusIcon => switch (status) {
@@ -180,12 +180,19 @@ class TaskCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                    actionLabel ?? 'I finished my work ✓',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.task_alt_rounded, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        actionLabel ?? 'I finished my work',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

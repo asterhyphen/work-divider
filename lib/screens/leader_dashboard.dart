@@ -361,7 +361,7 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
               const SizedBox(width: 10),
               Expanded(
                 child: _actionButton(
-                  'Approve ✓',
+                  'Approve',
                   AppColors.accentGreen,
                   () => provider.approveTask(user, task),
                 ),
