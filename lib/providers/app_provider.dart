@@ -11,8 +11,8 @@ class AppProvider extends ChangeNotifier {
   final RemoteSync _remoteSync = RemoteSync();
 
   String? get currentUser => _currentUser;
-  int get currentWeek => _currentWeek;
-  int get currentWeekNumber => _currentWeek;
+  int get currentWeek => ScheduleData.activeWeek;
+  int get currentWeekNumber => ScheduleData.activeWeek;
 
   bool get isLeader =>
       _currentUser != null &&
@@ -22,8 +22,9 @@ class AppProvider extends ChangeNotifier {
 
   /// Initialize from storage.
   Future<void> init() async {
-    _currentUser = Storage.getCurrentUser();
-    _currentWeek = ScheduleData.getCurrentWeekNumber();
+    _currentUser = null;
+    await Storage.clearCurrentUser();
+    _currentWeek = ScheduleData.activeWeek;
     await _remoteSync.pull();
     _remoteSync.startPolling(notifyListeners);
     notifyListeners();
@@ -147,11 +148,8 @@ class AppProvider extends ChangeNotifier {
 
   /// Refresh week number (in case day changed while app is open).
   void refreshWeek() {
-    final newWeek = ScheduleData.getCurrentWeekNumber();
-    if (newWeek != _currentWeek) {
-      _currentWeek = newWeek;
-      notifyListeners();
-    }
+    _currentWeek = ScheduleData.activeWeek;
+    notifyListeners();
   }
 
   @override

@@ -1,9 +1,12 @@
 // All hardcoded schedule data for HouseCycle.
-// Leader is ALWAYS the person assigned to Outside 2.
+// Ahmed is the hardcoded admin and receives the Outside 2 admin task.
 // Main Bathroom rotates ONLY: Amaan, Ahmed, Shaaz, Ayanuddin
 // Other Bathroom rotates ONLY: Wasiq, Asfan, Ayaan
 
 class ScheduleData {
+  static const int activeWeek = 1;
+  static const String adminUser = 'Ahmed';
+
   static const List<String> allUsers = [
     'Asfan',
     'Ahmed',
@@ -24,6 +27,16 @@ class ScheduleData {
     'Outside 2',
   ];
 
+  static const Map<String, String> passwords = {
+    'Asfan': 'asfan@house',
+    'Ahmed': 'aster@herheart',
+    'Ayanuddin': 'ayanuddin@house',
+    'Ayaan': 'ayaan@house',
+    'Amaan': 'amaan@house',
+    'Shaaz': 'shaaz@house',
+    'Wasiq': 'wasiq@house',
+  };
+
   static const Map<String, String> completionMessages = {
     'Main Bathroom': 'Bathroom survived another war.',
     'Other Bathroom': 'Fresh and clean. Victory!',
@@ -34,12 +47,12 @@ class ScheduleData {
     'Outside 2': 'Leading AND cleaning. Respect.',
   };
 
-  /// Each week: leader + 6 task assignments.
-  /// The leader is automatically assigned Outside 2.
+  /// Each week: admin + 6 task assignments.
+  /// The admin is automatically assigned Outside 2.
   static const List<Map<String, String>> weeklySchedules = [
     // Week 1
     {
-      'leader': 'Ayaan',
+      'leader': adminUser,
       'Main Bathroom': 'Amaan',
       'Other Bathroom': 'Wasiq',
       'Big Hall': 'Ahmed',
@@ -109,15 +122,8 @@ class ScheduleData {
     },
   ];
 
-  /// Get current week number (1-7) based on rotating schedule.
-  /// Uses a reference Monday and cycles every 7 weeks.
-  static int getCurrentWeekNumber() {
-    final reference = DateTime(2026, 5, 4); // Monday, May 4, 2026
-    final now = DateTime.now();
-    final daysDiff = now.difference(reference).inDays;
-    final weekIndex = (daysDiff ~/ 7) % 7;
-    return weekIndex + 1; // 1-based
-  }
+  /// The app is pinned to Week 1 for now.
+  static int getCurrentWeekNumber() => activeWeek;
 
   /// Get the schedule for a given week (1-7).
   static Map<String, String> getWeekSchedule(int weekNumber) {
@@ -126,7 +132,7 @@ class ScheduleData {
 
   /// Get the leader for a given week.
   static String getLeader(int weekNumber) {
-    return weeklySchedules[weekNumber - 1]['leader']!;
+    return adminUser;
   }
 
   /// Get all tasks assigned to a user for a given week.
@@ -136,7 +142,7 @@ class ScheduleData {
 
     for (final taskName in taskNames) {
       if (taskName == 'Outside 2') {
-        if (schedule['leader'] == userName) {
+        if (userName == adminUser) {
           tasks.add('Outside 2');
         }
       } else {
@@ -150,13 +156,17 @@ class ScheduleData {
 
   /// Check if a user is the leader for a given week.
   static bool isLeader(String userName, int weekNumber) {
-    return weeklySchedules[weekNumber - 1]['leader'] == userName;
+    return userName == adminUser;
+  }
+
+  static bool isPasswordValid(String userName, String password) {
+    return passwords[userName] == password.trim();
   }
 
   /// Get all assignments for a week as task->person map (including Outside 2).
   static Map<String, String> getFullAssignments(int weekNumber) {
     final schedule = Map<String, String>.from(weeklySchedules[weekNumber - 1]);
-    schedule['Outside 2'] = schedule['leader']!;
+    schedule['Outside 2'] = adminUser;
     schedule.remove('leader');
     return schedule;
   }

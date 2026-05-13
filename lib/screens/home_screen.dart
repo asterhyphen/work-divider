@@ -5,6 +5,7 @@ import 'package:meowdabattery/providers/app_provider.dart';
 import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/widgets/task_card.dart';
 import 'package:meowdabattery/screens/leader_dashboard.dart';
+import 'package:meowdabattery/screens/user_select_screen.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 import 'package:meowdabattery/widgets/sketch_background.dart';
 
@@ -113,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     ),
                                     SizedBox(width: 5),
                                     Text(
-                                      'Leader',
+                                      'Admin',
                                       style: TextStyle(
                                         color: Color(0xFF1a1a1a),
                                         fontSize: 12,
@@ -126,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen>
                             const SizedBox(width: 12),
                             PopupMenuButton<String>(
                               color: AppColors.bgCard,
-                              onSelected: (value) {
+                              onSelected: (value) async {
                                 if (value == 'dashboard' && isLeader) {
                                   Navigator.push(
                                     context,
@@ -162,7 +163,37 @@ class _HomeScreenState extends State<HomeScreen>
                                     ),
                                   );
                                 } else if (value == 'logout') {
-                                  appProvider.logout();
+                                  await appProvider.logout();
+                                  if (!context.mounted) return;
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    PageRouteBuilder(
+                                      pageBuilder:
+                                          (
+                                            context,
+                                            animation,
+                                            secondaryAnimation,
+                                          ) => const UserSelectScreen(),
+                                      transitionsBuilder:
+                                          (
+                                            context,
+                                            anim,
+                                            secondaryAnimation,
+                                            child,
+                                          ) {
+                                            return FadeTransition(
+                                              opacity: CurvedAnimation(
+                                                parent: anim,
+                                                curve: Curves.easeOut,
+                                              ),
+                                              child: child,
+                                            );
+                                          },
+                                      transitionDuration: const Duration(
+                                        milliseconds: 280,
+                                      ),
+                                    ),
+                                    (_) => false,
+                                  );
                                 }
                               },
                               itemBuilder: (BuildContext context) =>
@@ -178,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             ),
                                             SizedBox(width: 12),
                                             Text(
-                                              'Leader Dashboard',
+                                              'Admin Dashboard',
                                               style: TextStyle(
                                                 color: AppColors.textPrimary,
                                               ),
@@ -267,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Leader: $leader',
+                            'Admin: $leader',
                             style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 13,
@@ -356,6 +387,20 @@ class _HomeScreenState extends State<HomeScreen>
                               status: status,
                               onStatusChange: () =>
                                   _showStatusDialog(context, appProvider, task),
+                              onAction:
+                                  status == TaskStatus.none ||
+                                      status == TaskStatus.rejected
+                                  ? () => _submitTask(
+                                      context,
+                                      appProvider,
+                                      task,
+                                      isResubmission:
+                                          status == TaskStatus.rejected,
+                                    )
+                                  : null,
+                              actionLabel: status == TaskStatus.rejected
+                                  ? 'Resubmit for approval'
+                                  : 'Submit for approval',
                             ),
                           );
                         },
@@ -399,25 +444,42 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             const SizedBox(height: 24),
-            if (currentStatus == TaskStatus.none)
+            if (currentStatus == TaskStatus.none ||
+                currentStatus == TaskStatus.rejected)
               ElevatedButton(
-                onPressed: () {
-                  provider.submitTaskForApproval(task);
+                onPressed: () async {
+                  final isResubmission = currentStatus == TaskStatus.rejected;
+                  await _submitTask(
+                    context,
+                    provider,
+                    task,
+                    isResubmission: isResubmission,
+                    showSnackBar: false,
+                  );
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Task submitted for approval!'),
+                      content: Text(
+                        isResubmission
+                            ? 'Task resubmitted for approval!'
+                            : 'Task submitted for approval!',
+                      ),
                       backgroundColor: AppColors.accentGreen,
                       duration: const Duration(seconds: 2),
                     ),
                   );
                 },
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.check_circle),
-                    SizedBox(width: 8),
-                    Text('Mark as Complete'),
+                    const Icon(Icons.check_circle),
+                    const SizedBox(width: 8),
+                    Text(
+                      currentStatus == TaskStatus.rejected
+                          ? 'Resubmit for approval'
+                          : 'Mark as Complete',
+                    ),
                   ],
                 ),
               )
@@ -472,32 +534,6 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ],
                 ),
-              )
-            else
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.accentRed.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.accentRed.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.cancel, color: AppColors.accentRed),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Rejected. Please try again.',
-                        style: TextStyle(
-                          color: AppColors.accentRed,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             const SizedBox(height: 16),
             SizedBox(
@@ -509,6 +545,29 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _submitTask(
+    BuildContext context,
+    AppProvider provider,
+    String task, {
+    bool isResubmission = false,
+    bool showSnackBar = true,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await provider.submitTaskForApproval(task);
+    if (!context.mounted || !showSnackBar) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          isResubmission
+              ? 'Task resubmitted for approval!'
+              : 'Task submitted for approval!',
+        ),
+        backgroundColor: AppColors.accentGreen,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
