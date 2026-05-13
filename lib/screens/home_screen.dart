@@ -5,6 +5,8 @@ import 'package:meowdabattery/providers/app_provider.dart';
 import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/widgets/task_card.dart';
 import 'package:meowdabattery/screens/leader_dashboard.dart';
+import 'package:meowdabattery/widgets/glass_container.dart';
+import 'package:meowdabattery/widgets/sketch_background.dart';
 
 /// Home screen - shows user's tasks and completion status.
 class HomeScreen extends StatefulWidget {
@@ -47,8 +49,7 @@ class _HomeScreenState extends State<HomeScreen>
         final reminderLevel = appProvider.reminderLevel;
 
         return Scaffold(
-          body: Container(
-            decoration: const BoxDecoration(gradient: AppGradients.bgSubtle),
+          body: SketchBackground(
             child: SafeArea(
               child: Column(
                 children: [
@@ -59,26 +60,30 @@ class _HomeScreenState extends State<HomeScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // User greeting
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hi, $userName',
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hi, $userName',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Week $currentWeek of 7',
-                              style: const TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14,
+                              const SizedBox(height: 4),
+                              Text(
+                                'Week $currentWeek of 7',
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         // Leader badge and menu
                         Row(
@@ -91,7 +96,12 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                                 decoration: BoxDecoration(
                                   gradient: AppGradients.gold,
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: AppColors.ink.withValues(
+                                      alpha: 0.45,
+                                    ),
+                                  ),
                                 ),
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -200,7 +210,12 @@ class _HomeScreenState extends State<HomeScreen>
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: AppColors.bgCard,
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: AppColors.ink.withValues(
+                                      alpha: 0.55,
+                                    ),
+                                  ),
                                 ),
                                 child: const Icon(
                                   Icons.more_vert,
@@ -217,18 +232,16 @@ class _HomeScreenState extends State<HomeScreen>
                   // Deadline status card
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
+                    child: GlassContainer(
                       padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
+                      color: reminderLevel >= 3
+                          ? AppColors.accentRed.withValues(alpha: 0.1)
+                          : AppColors.bgCard,
+                      border: Border.all(
                         color: reminderLevel >= 3
-                            ? AppColors.accentRed.withValues(alpha: 0.1)
-                            : AppColors.bgCard,
-                        border: Border.all(
-                          color: reminderLevel >= 3
-                              ? AppColors.accentRed.withValues(alpha: 0.3)
-                              : AppColors.divider.withValues(alpha: 0.3),
-                        ),
-                        borderRadius: BorderRadius.circular(12),
+                            ? AppColors.accentRed.withValues(alpha: 0.3)
+                            : AppColors.ink.withValues(alpha: 0.55),
+                        width: 1.5,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/theme/app_icons.dart';
+import 'package:meowdabattery/widgets/glass_container.dart';
 
 /// User selection card for the "Who are you?" screen.
 class UserCard extends StatefulWidget {
@@ -83,65 +84,47 @@ class _UserCardState extends State<UserCard>
         child: AnimatedScale(
           scale: _isPressed ? 0.95 : 1.0,
           duration: const Duration(milliseconds: 120),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.bgCard,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: AppColors.divider.withValues(alpha: 0.4),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _gradient[0].withValues(alpha: 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
+          child: GlassContainer(
+            color: AppColors.bgCard,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.ink.withValues(alpha: 0.70),
+              width: 1.5,
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Avatar circle
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _gradient[0].withValues(alpha: 0.16),
+                    border: Border.all(
+                      color: _gradient[0].withValues(alpha: 0.75),
+                      width: 1.5,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    AppIcons.user(widget.index),
+                    color: _gradient[0],
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  widget.name,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Avatar circle
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: _gradient,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _gradient[0].withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(
-                      AppIcons.user(widget.index),
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    widget.name,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
             ),
           ),
         ),

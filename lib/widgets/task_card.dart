@@ -5,7 +5,7 @@ import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/theme/app_icons.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 
-/// Beautiful task card with status, animations, and gradient accents.
+/// Task card with status, actions, and sketch-style surfaces.
 class TaskCard extends StatelessWidget {
   // Use either (task, status, onStatusChange) or (taskName, assignedTo, status, showUser, onAction)
   final String? task;
@@ -64,27 +64,27 @@ class TaskCard extends StatelessWidget {
       child: GlassContainer(
         duration: const Duration(milliseconds: 400),
         margin: const EdgeInsets.only(bottom: 12),
-        color: AppColors.bgCard.withValues(alpha: 0.4),
+        color: AppColors.bgCard,
         blur: 15,
         border: Border.all(
           color: status == TaskStatus.approved
-              ? AppColors.accentGreen.withValues(alpha: 0.3)
+              ? AppColors.accentGreen.withValues(alpha: 0.65)
               : isOverdue
-              ? AppColors.accentRed.withValues(alpha: 0.3)
-              : Colors.white.withValues(alpha: 0.08),
-          width: 1,
+              ? AppColors.accentRed.withValues(alpha: 0.65)
+              : AppColors.ink.withValues(alpha: 0.70),
+          width: 1.5,
         ),
         boxShadow: [
           status == TaskStatus.approved
               ? BoxShadow(
-                  color: AppColors.accentGreen.withValues(alpha: 0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
+                  color: AppColors.accentGreen.withValues(alpha: 0.16),
+                  blurRadius: 0,
+                  offset: const Offset(4, 5),
                 )
               : BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
+                  color: AppColors.ink.withValues(alpha: 0.10),
+                  blurRadius: 0,
+                  offset: const Offset(4, 5),
                 ),
         ],
         padding: const EdgeInsets.all(16),
@@ -97,8 +97,11 @@ class TaskCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppColors.bgCardLight,
-                    borderRadius: BorderRadius.circular(14),
+                    color: AppColors.accentPurple.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.accentPurple.withValues(alpha: 0.45),
+                    ),
                   ),
                   alignment: Alignment.center,
                   child: Icon(
@@ -118,8 +121,10 @@ class TaskCard extends StatelessWidget {
                         style: const TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       if (showUser && assignedTo != null) ...[
                         const SizedBox(height: 2),
@@ -150,8 +155,11 @@ class TaskCard extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withValues(alpha: 0.08),
+                  color: AppColors.accentGreen.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.accentGreen.withValues(alpha: 0.28),
+                  ),
                 ),
                 child: Text(
                   ScheduleData.completionMessages[_displayName] ??

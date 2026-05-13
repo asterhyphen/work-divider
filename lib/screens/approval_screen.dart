@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/providers/app_provider.dart';
+import 'package:meowdabattery/widgets/glass_container.dart';
+import 'package:meowdabattery/widgets/sketch_background.dart';
 
 /// Detailed approval screen for reviewing pending task completions.
 class ApprovalScreen extends StatefulWidget {
@@ -19,8 +21,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         final pendingApprovals = provider.pendingApprovals;
 
         return Scaffold(
-          body: Container(
-            decoration: const BoxDecoration(gradient: AppGradients.bgSubtle),
+          body: SketchBackground(
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,9 +38,9 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                             height: 40,
                             decoration: BoxDecoration(
                               color: AppColors.bgCard,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: AppColors.divider.withValues(alpha: 0.3),
+                                color: AppColors.ink.withValues(alpha: 0.55),
                               ),
                             ),
                             child: const Icon(
@@ -81,7 +82,12 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                             color: AppColors.accentOrange.withValues(
                               alpha: 0.15,
                             ),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppColors.accentOrange.withValues(
+                                alpha: 0.28,
+                              ),
+                            ),
                           ),
                           child: Text(
                             '${pendingApprovals.length}',
@@ -178,13 +184,12 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     String user,
     String task,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.accentOrange.withValues(alpha: 0.25),
-        ),
+    return GlassContainer(
+      color: AppColors.bgCard,
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(
+        color: AppColors.accentOrange.withValues(alpha: 0.65),
+        width: 1.5,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +204,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     color: AppColors.accentOrange.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.accentOrange.withValues(alpha: 0.30),
+                    ),
                   ),
                   alignment: Alignment.center,
                   child: const Icon(
@@ -239,7 +247,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.accentOrange.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.accentOrange.withValues(alpha: 0.25),
+                    ),
                   ),
                   child: const Icon(
                     Icons.hourglass_top_rounded,
@@ -277,7 +288,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
                         color: AppColors.accentRed.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.accentRed.withValues(alpha: 0.35),
+                        ),
                       ),
                       alignment: Alignment.center,
                       child: const Row(
@@ -321,7 +335,10 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
                         color: AppColors.accentGreen.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.accentGreen.withValues(alpha: 0.35),
+                        ),
                       ),
                       alignment: Alignment.center,
                       child: const Row(

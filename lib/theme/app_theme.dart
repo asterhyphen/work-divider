@@ -2,24 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const Color bgDark = Color(0xFF0A0A1A);
-  static const Color bgCard = Color(0xFF161630);
-  static const Color bgCardLight = Color(0xFF1E1E42);
-  static const Color bgCardHover = Color(0xFF252550);
-  static const Color accentPurple = Color(0xFF7B61FF);
-  static const Color accentPurpleLight = Color(0xFF9D8AFF);
-  static const Color accentBlue = Color(0xFF4FC3F7);
-  static const Color accentCyan = Color(0xFF00E5FF);
-  static const Color accentGreen = Color(0xFF69F0AE);
-  static const Color accentRed = Color(0xFFFF5252);
-  static const Color accentOrange = Color(0xFFFFAB40);
-  static const Color accentPink = Color(0xFFFF6090);
-  static const Color accentGold = Color(0xFFFFD740);
-  static const Color textPrimary = Color(0xFFF0F0F8);
-  static const Color textSecondary = Color(0xFFB0B0C8);
-  static const Color textMuted = Color(0xFF6A6A88);
-  static const Color divider = Color(0xFF2A2A4A);
-  static const Color shimmer = Color(0x20FFFFFF);
+  static const Color bgDark = Color(0xFFFAF3E7);
+  static const Color bgCard = Color(0xFFFFFCF4);
+  static const Color bgCardLight = Color(0xFFF4E7D2);
+  static const Color bgCardHover = Color(0xFFFFF7E6);
+  static const Color accentPurple = Color(0xFF7A4CC2);
+  static const Color accentPurpleLight = Color(0xFF9B6FE0);
+  static const Color accentBlue = Color(0xFF2F7BBF);
+  static const Color accentCyan = Color(0xFF158C9E);
+  static const Color accentGreen = Color(0xFF2E9463);
+  static const Color accentRed = Color(0xFFD8463D);
+  static const Color accentOrange = Color(0xFFE28B32);
+  static const Color accentPink = Color(0xFFD95E8E);
+  static const Color accentGold = Color(0xFFE2B03A);
+  static const Color textPrimary = Color(0xFF201B18);
+  static const Color textSecondary = Color(0xFF665B52);
+  static const Color textMuted = Color(0xFF8A7D70);
+  static const Color divider = Color(0xFFD8C8B3);
+  static const Color ink = Color(0xFF201B18);
+  static const Color paperLine = Color(0xFFEADBC7);
+  static const Color shimmer = Color(0x22FFFFFF);
 }
 
 class AppGradients {
@@ -54,7 +56,7 @@ class AppGradients {
   );
 
   static const LinearGradient bgSubtle = LinearGradient(
-    colors: [Color(0xFF0A0A1A), Color(0xFF12122A)],
+    colors: [Color(0xFFFAF3E7), Color(0xFFF1DFC5)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -69,13 +71,13 @@ class AppGradients {
 class AppTheme {
   static ThemeData get darkTheme {
     final baseTextTheme = GoogleFonts.interTextTheme(
-      ThemeData.dark().textTheme,
+      ThemeData.light().textTheme,
     );
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.bgDark,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.accentPurple,
         secondary: AppColors.accentBlue,
         surface: AppColors.bgCard,
@@ -122,20 +124,31 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.bgCard,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accentPurple,
+          backgroundColor: AppColors.ink,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          minimumSize: const Size(48, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(10),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.ink,
+          minimumSize: const Size(48, 48),
+          side: const BorderSide(color: AppColors.ink, width: 1.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),

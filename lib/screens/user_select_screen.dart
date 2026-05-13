@@ -5,6 +5,7 @@ import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/providers/app_provider.dart';
 import 'package:meowdabattery/widgets/user_card.dart';
 import 'package:meowdabattery/screens/home_screen.dart';
+import 'package:meowdabattery/widgets/sketch_background.dart';
 
 /// "Who are you?" screen — user identity selection.
 class UserSelectScreen extends StatelessWidget {
@@ -13,8 +14,7 @@ class UserSelectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppGradients.bgSubtle),
+      body: SketchBackground(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -30,22 +30,24 @@ class UserSelectScreen extends StatelessWidget {
                         width: 64,
                         height: 64,
                         decoration: BoxDecoration(
-                          gradient: AppGradients.purple,
-                          borderRadius: BorderRadius.circular(20),
+                          color: AppColors.bgCard,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.ink.withValues(alpha: 0.75),
+                            width: 1.5,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.accentPurple.withValues(
-                                alpha: 0.3,
-                              ),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
+                              color: AppColors.ink.withValues(alpha: 0.10),
+                              blurRadius: 0,
+                              offset: const Offset(4, 5),
                             ),
                           ],
                         ),
                         alignment: Alignment.center,
                         child: const Icon(
                           Icons.home_rounded,
-                          color: Colors.white,
+                          color: AppColors.accentPurple,
                           size: 32,
                         ),
                       ),
@@ -56,7 +58,6 @@ class UserSelectScreen extends StatelessWidget {
                           color: AppColors.textPrimary,
                           fontSize: 28,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(height: 6),

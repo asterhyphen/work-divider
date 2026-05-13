@@ -6,6 +6,8 @@ import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/widgets/task_card.dart';
 import 'package:meowdabattery/widgets/progress_ring.dart';
 import 'package:meowdabattery/widgets/confetti_overlay.dart';
+import 'package:meowdabattery/widgets/glass_container.dart';
+import 'package:meowdabattery/widgets/sketch_background.dart';
 
 class LeaderDashboard extends StatefulWidget {
   const LeaderDashboard({super.key});
@@ -34,8 +36,7 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
         return ConfettiOverlay(
           isPlaying: _showConfetti,
           child: Scaffold(
-            body: Container(
-              decoration: const BoxDecoration(gradient: AppGradients.bgSubtle),
+            body: SketchBackground(
               child: SafeArea(
                 child: Column(
                   children: [
@@ -113,9 +114,9 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
               height: 40,
               decoration: BoxDecoration(
                 color: AppColors.bgCard,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: AppColors.divider.withValues(alpha: 0.3),
+                  color: AppColors.ink.withValues(alpha: 0.55),
                 ),
               ),
               child: const Icon(
@@ -162,18 +163,14 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
       }
     }
 
-    return Container(
+    return GlassContainer(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.accentGold.withValues(alpha: 0.12),
-            AppColors.accentOrange.withValues(alpha: 0.06),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.2)),
+      color: AppColors.accentGold.withValues(alpha: 0.12),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: AppColors.accentGold.withValues(alpha: 0.72),
+        width: 1.5,
       ),
       child: Row(
         children: [
@@ -273,7 +270,10 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppColors.accentPurple.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: AppColors.accentPurple.withValues(alpha: 0.25),
+            ),
           ),
           child: Text(
             count,
@@ -294,15 +294,14 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
     String user,
     String task,
   ) {
-    return Container(
+    return GlassContainer(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.accentOrange.withValues(alpha: 0.25),
-        ),
+      color: AppColors.bgCard,
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(
+        color: AppColors.accentOrange.withValues(alpha: 0.65),
+        width: 1.5,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +313,10 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.accentOrange.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.accentOrange.withValues(alpha: 0.30),
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: const Icon(
@@ -380,7 +382,8 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withValues(alpha: 0.35)),
         ),
         alignment: Alignment.center,
         child: Text(
