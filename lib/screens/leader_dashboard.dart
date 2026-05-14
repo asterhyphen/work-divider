@@ -50,6 +50,8 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                           children: [
                             const SizedBox(height: 16),
                             _buildStatsCard(completion, assignments, provider),
+                            const SizedBox(height: 16),
+                            _buildAdminControls(context, provider, pending),
                             const SizedBox(height: 24),
                             if (pending.isNotEmpty) ...[
                               _sectionHeader(
@@ -134,7 +136,7 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
           ),
           const SizedBox(width: 8),
           const Text(
-            'Leader Dashboard',
+            'Admin Dashboard',
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 20,
@@ -288,8 +290,92 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
     );
   }
 
+  Widget _buildAdminControls(
+    BuildContext context,
+    AppProvider provider,
+    List<Map<String, String>> pending,
+  ) {
+    return GlassContainer(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: AppColors.accentPurple.withValues(alpha: 0.55),
+        width: 1.5,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.tune_rounded, color: AppColors.accentPurple, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Admin Controls',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _actionButton(
+                  'Approve All',
+                  AppColors.accentGreen,
+                  pending.isEmpty
+                      ? null
+                      : () => _runAdminAction(
+                          context,
+                          provider.approveAllPending,
+                          success: 'Approved all pending tasks.',
+                        ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _actionButton(
+                  'Reject All',
+                  AppColors.accentRed,
+                  pending.isEmpty
+                      ? null
+                      : () => _runAdminAction(
+                          context,
+                          provider.rejectAllPending,
+                          success: 'Rejected all pending tasks.',
+                        ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: _actionButton(
+              'Reset Week Tasks',
+              AppColors.accentOrange,
+              () async {
+                final confirmed = await _confirmReset(context);
+                if (!confirmed || !context.mounted) return;
+                await _runAdminAction(
+                  context,
+                  provider.resetWeekTasks,
+                  success: 'Week 1 task statuses reset.',
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildApprovalCard(
-    BuildContext ctx,
+    BuildContext context,
     AppProvider provider,
     String user,
     String task,
@@ -357,7 +443,11 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                 child: _actionButton(
                   'Reject',
                   AppColors.accentRed,
-                  () => provider.rejectTask(user, task),
+                  () => _runAdminAction(
+                    context,
+                    () => provider.rejectTask(user, task),
+                    success: '$task rejected for $user.',
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -365,7 +455,11 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                 child: _actionButton(
                   'Approve',
                   AppColors.accentGreen,
-                  () => provider.approveTask(user, task),
+                  () => _runAdminAction(
+                    context,
+                    () => provider.approveTask(user, task),
+                    success: '$task approved for $user.',
+                  ),
                 ),
               ),
             ],
@@ -375,26 +469,84 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
     );
   }
 
-  Widget _actionButton(String label, Color color, VoidCallback onTap) {
+  Widget _actionButton(String label, Color color, VoidCallback? onTap) {
+    final enabled = onTap != null;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
+          color: color.withValues(alpha: enabled ? 0.12 : 0.05),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: color.withValues(alpha: 0.35)),
+          border: Border.all(
+            color: color.withValues(alpha: enabled ? 0.35 : 0.14),
+          ),
         ),
         alignment: Alignment.center,
         child: Text(
           label,
           style: TextStyle(
-            color: color,
+            color: enabled ? color : AppColors.textMuted,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _runAdminAction(
+    BuildContext context,
+    Future<void> Function() action, {
+    required String success,
+  }) async {
+    try {
+      await action();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success),
+          backgroundColor: AppColors.accentGreen,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Admin action failed. Please try again.'),
+          backgroundColor: AppColors.accentRed,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  Future<bool> _confirmReset(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        title: const Text(
+          'Reset Week 1?',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
+        content: const Text(
+          'This clears every task status for the active week.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
   }
 }

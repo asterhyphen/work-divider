@@ -19,6 +19,7 @@ class AppProvider extends ChangeNotifier {
       ScheduleData.isLeader(_currentUser!, _currentWeek);
 
   String get leaderName => ScheduleData.getLeader(_currentWeek);
+  String get adminName => ScheduleData.adminUser;
 
   /// Initialize from storage.
   Future<void> init() async {
@@ -95,6 +96,45 @@ class AppProvider extends ChangeNotifier {
   /// Leader rejects a task.
   Future<void> rejectTask(String user, String task) async {
     await Storage.setTaskStatus(_currentWeek, user, task, 'rejected');
+    await _remoteSync.push();
+    notifyListeners();
+  }
+
+  /// Admin approves every task currently waiting for review.
+  Future<void> approveAllPending() async {
+    final pending = List<Map<String, String>>.from(pendingApprovals);
+    for (final approval in pending) {
+      await Storage.setTaskStatus(
+        _currentWeek,
+        approval['user']!,
+        approval['task']!,
+        'approved',
+      );
+    }
+    await _remoteSync.push();
+    notifyListeners();
+  }
+
+  /// Admin rejects every task currently waiting for review.
+  Future<void> rejectAllPending() async {
+    final pending = List<Map<String, String>>.from(pendingApprovals);
+    for (final approval in pending) {
+      await Storage.setTaskStatus(
+        _currentWeek,
+        approval['user']!,
+        approval['task']!,
+        'rejected',
+      );
+    }
+    await _remoteSync.push();
+    notifyListeners();
+  }
+
+  /// Admin clears all task statuses for the active week.
+  Future<void> resetWeekTasks() async {
+    for (final entry in fullAssignments.entries) {
+      await Storage.setTaskStatus(_currentWeek, entry.value, entry.key, 'none');
+    }
     await _remoteSync.push();
     notifyListeners();
   }

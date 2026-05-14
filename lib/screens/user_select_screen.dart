@@ -197,22 +197,30 @@ class _UserSelectScreenState extends State<UserSelectScreen>
                 errorText = null;
               });
 
-              await Future<void>.delayed(const Duration(milliseconds: 180));
-              if (!dialogContext.mounted) return;
-              if (!ScheduleData.isPasswordValid(
-                name,
-                passwordController.text,
-              )) {
+              try {
+                await Future<void>.delayed(const Duration(milliseconds: 180));
+                if (!dialogContext.mounted) return;
+                if (!ScheduleData.isPasswordValid(
+                  name,
+                  passwordController.text,
+                )) {
+                  setDialogState(() {
+                    isLoading = false;
+                    errorText = 'Wrong password for $name';
+                  });
+                  return;
+                }
+
+                await provider.selectUser(name);
+                if (!dialogContext.mounted) return;
+                Navigator.of(dialogContext).pop(true);
+              } catch (error) {
+                if (!dialogContext.mounted) return;
                 setDialogState(() {
                   isLoading = false;
-                  errorText = 'Wrong password for $name';
+                  errorText = 'Could not log in. Try again.';
                 });
-                return;
               }
-
-              await provider.selectUser(name);
-              if (!dialogContext.mounted) return;
-              Navigator.of(dialogContext).pop(true);
             }
 
             return Center(

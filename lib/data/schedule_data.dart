@@ -1,5 +1,5 @@
 // All hardcoded schedule data for HouseCycle.
-// Ahmed is the hardcoded admin and receives the Outside 2 admin task.
+// Ahmed is the hardcoded admin. Outside 2 follows the weekly schedule.
 // Main Bathroom rotates ONLY: Amaan, Ahmed, Shaaz, Ayanuddin
 // Other Bathroom rotates ONLY: Wasiq, Asfan, Ayaan
 
@@ -47,12 +47,11 @@ class ScheduleData {
     'Outside 2': 'Leading AND cleaning. Respect.',
   };
 
-  /// Each week: admin + 6 task assignments.
-  /// The admin is automatically assigned Outside 2.
+  /// Each week: the `leader` field is the Outside 2 assignment.
   static const List<Map<String, String>> weeklySchedules = [
     // Week 1
     {
-      'leader': adminUser,
+      'leader': 'Ayaan',
       'Main Bathroom': 'Amaan',
       'Other Bathroom': 'Wasiq',
       'Big Hall': 'Ahmed',
@@ -132,7 +131,7 @@ class ScheduleData {
 
   /// Get the leader for a given week.
   static String getLeader(int weekNumber) {
-    return adminUser;
+    return weeklySchedules[weekNumber - 1]['leader']!;
   }
 
   /// Get all tasks assigned to a user for a given week.
@@ -142,7 +141,7 @@ class ScheduleData {
 
     for (final taskName in taskNames) {
       if (taskName == 'Outside 2') {
-        if (userName == adminUser) {
+        if (schedule['leader'] == userName) {
           tasks.add('Outside 2');
         }
       } else {
@@ -166,7 +165,7 @@ class ScheduleData {
   /// Get all assignments for a week as task->person map (including Outside 2).
   static Map<String, String> getFullAssignments(int weekNumber) {
     final schedule = Map<String, String>.from(weeklySchedules[weekNumber - 1]);
-    schedule['Outside 2'] = adminUser;
+    schedule['Outside 2'] = schedule['leader']!;
     schedule.remove('leader');
     return schedule;
   }

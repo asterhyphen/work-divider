@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen>
         final tasks = appProvider.myTasks;
         final isLeader = appProvider.isLeader;
         final leader = appProvider.leaderName;
+        final admin = appProvider.adminName;
         final deadlineStatus = appProvider.deadlineStatus;
         final reminderLevel = appProvider.reminderLevel;
 
@@ -127,72 +128,27 @@ class _HomeScreenState extends State<HomeScreen>
                             const SizedBox(width: 12),
                             PopupMenuButton<String>(
                               color: AppColors.bgCard,
+                              elevation: 0,
+                              offset: const Offset(0, 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                  color: AppColors.ink.withValues(alpha: 0.45),
+                                  width: 1.4,
+                                ),
+                              ),
                               onSelected: (value) async {
-                                if (value == 'dashboard' && isLeader) {
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      pageBuilder:
-                                          (
-                                            context,
-                                            animation,
-                                            secondaryAnimation,
-                                          ) => const LeaderDashboard(),
-                                      transitionsBuilder:
-                                          (
-                                            context,
-                                            anim,
-                                            secondaryAnimation,
-                                            child,
-                                          ) => SlideTransition(
-                                            position:
-                                                Tween(
-                                                  begin: const Offset(1, 0),
-                                                  end: Offset.zero,
-                                                ).animate(
-                                                  CurvedAnimation(
-                                                    parent: anim,
-                                                    curve: Curves.easeOut,
-                                                  ),
-                                                ),
-                                            child: child,
-                                          ),
-                                      transitionDuration: const Duration(
-                                        milliseconds: 300,
-                                      ),
-                                    ),
-                                  );
-                                } else if (value == 'logout') {
-                                  await appProvider.logout();
+                                try {
+                                  if (value == 'dashboard' && isLeader) {
+                                    _openAdminDashboard(context);
+                                  } else if (value == 'logout') {
+                                    await _logout(context, appProvider);
+                                  }
+                                } catch (error) {
                                   if (!context.mounted) return;
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    PageRouteBuilder(
-                                      pageBuilder:
-                                          (
-                                            context,
-                                            animation,
-                                            secondaryAnimation,
-                                          ) => const UserSelectScreen(),
-                                      transitionsBuilder:
-                                          (
-                                            context,
-                                            anim,
-                                            secondaryAnimation,
-                                            child,
-                                          ) {
-                                            return FadeTransition(
-                                              opacity: CurvedAnimation(
-                                                parent: anim,
-                                                curve: Curves.easeOut,
-                                              ),
-                                              child: child,
-                                            );
-                                          },
-                                      transitionDuration: const Duration(
-                                        milliseconds: 280,
-                                      ),
-                                    ),
-                                    (_) => false,
+                                  _showErrorSnackBar(
+                                    context,
+                                    'Could not complete that action. Please try again.',
                                   );
                                 }
                               },
@@ -201,39 +157,25 @@ class _HomeScreenState extends State<HomeScreen>
                                     if (isLeader)
                                       const PopupMenuItem<String>(
                                         value: 'dashboard',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.dashboard,
-                                              color: AppColors.textPrimary,
-                                            ),
-                                            SizedBox(width: 12),
-                                            Text(
-                                              'Admin Dashboard',
-                                              style: TextStyle(
-                                                color: AppColors.textPrimary,
-                                              ),
-                                            ),
-                                          ],
+                                        child: _MenuOption(
+                                          icon: Icons.dashboard_rounded,
+                                          title: 'Admin Dashboard',
+                                          subtitle: 'Approvals and controls',
+                                          color: AppColors.accentPurple,
                                         ),
                                       ),
-                                    const PopupMenuDivider(),
+                                    const PopupMenuItem<String>(
+                                      enabled: false,
+                                      height: 6,
+                                      child: SizedBox.shrink(),
+                                    ),
                                     const PopupMenuItem<String>(
                                       value: 'logout',
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.logout,
-                                            color: AppColors.accentRed,
-                                          ),
-                                          SizedBox(width: 12),
-                                          Text(
-                                            'Logout',
-                                            style: TextStyle(
-                                              color: AppColors.accentRed,
-                                            ),
-                                          ),
-                                        ],
+                                      child: _MenuOption(
+                                        icon: Icons.logout_rounded,
+                                        title: 'Logout',
+                                        subtitle: 'Return to password screen',
+                                        color: AppColors.accentRed,
                                       ),
                                     ),
                                   ],
@@ -298,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Admin: $leader',
+                            'Admin: $admin | Outside 2: $leader',
                             style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 13,
@@ -557,17 +499,128 @@ class _HomeScreenState extends State<HomeScreen>
     bool showSnackBar = true,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
-    await provider.submitTaskForApproval(task);
-    if (!context.mounted || !showSnackBar) return;
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          isResubmission
-              ? 'Task resubmitted for approval!'
-              : 'Task submitted for approval!',
+    try {
+      await provider.submitTaskForApproval(task);
+      if (!context.mounted || !showSnackBar) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            isResubmission
+                ? 'Task resubmitted for approval!'
+                : 'Task submitted for approval!',
+          ),
+          backgroundColor: AppColors.accentGreen,
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: AppColors.accentGreen,
-        duration: const Duration(seconds: 2),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      _showErrorSnackBar(context, 'Could not submit this task.');
+    }
+  }
+
+  void _openAdminDashboard(BuildContext context) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const LeaderDashboard(),
+        transitionsBuilder: (context, anim, secondaryAnimation, child) =>
+            SlideTransition(
+              position: Tween(begin: const Offset(1, 0), end: Offset.zero)
+                  .animate(
+                    CurvedAnimation(parent: anim, curve: Curves.easeOutCubic),
+                  ),
+              child: child,
+            ),
+        transitionDuration: const Duration(milliseconds: 300),
+      ),
+    );
+  }
+
+  Future<void> _logout(BuildContext context, AppProvider appProvider) async {
+    await appProvider.logout();
+    if (!context.mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const UserSelectScreen(),
+        transitionsBuilder: (context, anim, secondaryAnimation, child) =>
+            FadeTransition(
+              opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
+              child: child,
+            ),
+        transitionDuration: const Duration(milliseconds: 280),
+      ),
+      (_) => false,
+    );
+  }
+
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.accentRed,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+}
+
+class _MenuOption extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+
+  const _MenuOption({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: color.withValues(alpha: 0.28)),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
