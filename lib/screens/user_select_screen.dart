@@ -174,7 +174,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
   }
 
   Future<void> _showPasswordPrompt(BuildContext context, String name) async {
-    final passwordController = TextEditingController();
+    var password = '';
     var obscurePassword = true;
     var isLoading = false;
     String? errorText;
@@ -199,10 +199,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
               try {
                 await Future<void>.delayed(const Duration(milliseconds: 180));
                 if (!dialogContext.mounted) return;
-                if (!ScheduleData.isPasswordValid(
-                  name,
-                  passwordController.text,
-                )) {
+                if (!ScheduleData.isPasswordValid(name, password)) {
                   setDialogState(() {
                     isLoading = false;
                     errorText = 'Wrong password for $name';
@@ -298,9 +295,11 @@ class _UserSelectScreenState extends State<UserSelectScreen>
                             ),
                             const SizedBox(height: 18),
                             TextField(
-                              controller: passwordController,
                               obscureText: obscurePassword,
                               autofocus: true,
+                              onChanged: (value) => setDialogState(() {
+                                password = value;
+                              }),
                               onSubmitted: (_) => submit(),
                               decoration: InputDecoration(
                                 labelText: 'Password',
@@ -395,7 +394,5 @@ class _UserSelectScreenState extends State<UserSelectScreen>
         );
       },
     );
-
-    passwordController.dispose();
   }
 }
