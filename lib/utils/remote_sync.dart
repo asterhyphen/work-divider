@@ -25,7 +25,9 @@ class RemoteSync {
     if (!isEnabled || _isSyncing) return false;
     _isSyncing = true;
     try {
-      final response = await http.get(Uri.parse(_readUrl), headers: _headers);
+      final response = await http
+          .get(Uri.parse(_readUrl), headers: _headers)
+          .timeout(const Duration(seconds: 8));
       if (response.statusCode < 200 || response.statusCode >= 300) {
         return false;
       }
@@ -41,31 +43,32 @@ class RemoteSync {
     }
   }
 
-  Future<void> push() async {
-    if (!isEnabled || _isSyncing) return;
+  Future<bool> push() async {
+    if (!isEnabled || _isSyncing) return false;
     _isSyncing = true;
     try {
-      await http.put(
-        Uri.parse(_url),
-        headers: {..._headers, 'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'updatedAt': DateTime.now().toUtc().toIso8601String(),
-          'state': Storage.getSharedState(),
-        }),
-      );
+      final response = await http
+          .put(
+            Uri.parse(_url),
+            headers: {..._headers, 'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'updatedAt': DateTime.now().toUtc().toIso8601String(),
+              'state': Storage.getSharedState(),
+            }),
+          )
+          .timeout(const Duration(seconds: 8));
+      return response.statusCode >= 200 && response.statusCode < 300;
     } catch (_) {
       // Local state remains the source of truth until the next successful push.
+      return false;
     } finally {
       _isSyncing = false;
     }
   }
 
-  void startPolling(void Function() onRemoteChange) {
+  void startPolling(Future<void> Function() onPoll) {
     if (!isEnabled || _timer != null) return;
-    _timer = Timer.periodic(_pollInterval, (_) async {
-      final changed = await pull();
-      if (changed) onRemoteChange();
-    });
+    _timer = Timer.periodic(_pollInterval, (_) => onPoll());
   }
 
   void dispose() {

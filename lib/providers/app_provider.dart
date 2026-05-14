@@ -5,7 +5,7 @@ import 'package:meowdabattery/utils/remote_sync.dart';
 import 'package:meowdabattery/utils/storage.dart';
 
 /// Central state management for HouseCycle.
-class AppProvider extends ChangeNotifier {
+class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   String? _currentUser;
   int _currentWeek = 1;
   final RemoteSync _remoteSync = RemoteSync();
@@ -23,11 +23,12 @@ class AppProvider extends ChangeNotifier {
 
   /// Initialize from storage.
   Future<void> init() async {
+    WidgetsBinding.instance.addObserver(this);
     _currentUser = null;
     await Storage.clearCurrentUser();
     _currentWeek = ScheduleData.activeWeek;
-    await _remoteSync.pull();
-    _remoteSync.startPolling(notifyListeners);
+    await syncNow();
+    _remoteSync.startPolling(syncNow);
     notifyListeners();
   }
 
@@ -71,7 +72,7 @@ class AppProvider extends ChangeNotifier {
       task,
       'pending_approval',
     );
-    await _remoteSync.push();
+    await _pushLocalChanges();
     notifyListeners();
   }
 
@@ -89,14 +90,14 @@ class AppProvider extends ChangeNotifier {
       await Storage.setStreak(user, currentStreak + 1);
     }
 
-    await _remoteSync.push();
+    await _pushLocalChanges();
     notifyListeners();
   }
 
   /// Leader rejects a task.
   Future<void> rejectTask(String user, String task) async {
     await Storage.setTaskStatus(_currentWeek, user, task, 'rejected');
-    await _remoteSync.push();
+    await _pushLocalChanges();
     notifyListeners();
   }
 
@@ -111,7 +112,7 @@ class AppProvider extends ChangeNotifier {
         'approved',
       );
     }
-    await _remoteSync.push();
+    await _pushLocalChanges();
     notifyListeners();
   }
 
@@ -126,7 +127,7 @@ class AppProvider extends ChangeNotifier {
         'rejected',
       );
     }
-    await _remoteSync.push();
+    await _pushLocalChanges();
     notifyListeners();
   }
 
@@ -135,8 +136,33 @@ class AppProvider extends ChangeNotifier {
     for (final entry in fullAssignments.entries) {
       await Storage.setTaskStatus(_currentWeek, entry.value, entry.key, 'none');
     }
-    await _remoteSync.push();
+    await _pushLocalChanges();
     notifyListeners();
+  }
+
+  /// Local-first sync: push unsent local edits, then pull latest shared state.
+  Future<void> syncNow() async {
+    if (!_remoteSync.isEnabled) return;
+
+    if (Storage.getHasPendingSync()) {
+      final pushed = await _remoteSync.push();
+      if (!pushed) {
+        notifyListeners();
+        return;
+      }
+      await Storage.setHasPendingSync(false);
+    }
+
+    final changed = await _remoteSync.pull();
+    if (changed) notifyListeners();
+  }
+
+  Future<void> _pushLocalChanges() async {
+    await Storage.setHasPendingSync(true);
+    final pushed = await _remoteSync.push();
+    if (pushed) {
+      await Storage.setHasPendingSync(false);
+    }
   }
 
   /// Get full assignments for the current week.
@@ -194,7 +220,15 @@ class AppProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _remoteSync.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      syncNow();
+    }
   }
 }

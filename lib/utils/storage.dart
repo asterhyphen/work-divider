@@ -51,6 +51,14 @@ class Storage {
     return prefs.setInt('last_processed_week', week);
   }
 
+  static bool getHasPendingSync() {
+    return prefs.getBool('has_pending_sync') ?? false;
+  }
+
+  static Future<void> setHasPendingSync(bool value) {
+    return prefs.setBool('has_pending_sync', value);
+  }
+
   static Map<String, Object?> getSharedState() {
     final state = <String, Object?>{};
     for (final key in prefs.getKeys()) {
