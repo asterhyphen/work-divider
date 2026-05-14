@@ -4,7 +4,6 @@ import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/providers/app_provider.dart';
 import 'package:meowdabattery/widgets/user_card.dart';
-import 'package:meowdabattery/screens/home_screen.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 import 'package:meowdabattery/widgets/sketch_background.dart';
 
@@ -181,7 +180,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
     String? errorText;
     final provider = context.read<AppProvider>();
 
-    final unlocked = await showGeneralDialog<bool>(
+    await showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Password',
@@ -213,7 +212,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
 
                 await provider.selectUser(name);
                 if (!dialogContext.mounted) return;
-                Navigator.of(dialogContext).pop(true);
+                Navigator.of(dialogContext).pop();
               } catch (error) {
                 if (!dialogContext.mounted) return;
                 setDialogState(() {
@@ -223,140 +222,157 @@ class _UserSelectScreenState extends State<UserSelectScreen>
               }
             }
 
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Material(
-                  color: Colors.transparent,
-                  child: GlassContainer(
-                    padding: const EdgeInsets.all(20),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: AppColors.accentPurple.withValues(alpha: 0.72),
-                      width: 1.6,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+            return AnimatedPadding(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: MediaQuery.viewInsetsOf(dialogContext).bottom + 24,
+              ),
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: GlassContainer(
+                        padding: const EdgeInsets.all(20),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: AppColors.accentPurple.withValues(alpha: 0.72),
+                          width: 1.6,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: AppColors.accentPurple.withValues(
-                                  alpha: 0.12,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: AppColors.accentPurple.withValues(
-                                    alpha: 0.34,
-                                  ),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.lock_rounded,
-                                color: AppColors.accentPurple,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: const TextStyle(
-                                      color: AppColors.textPrimary,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w800,
+                            Row(
+                              children: [
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.accentPurple.withValues(
+                                      alpha: 0.12,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.accentPurple.withValues(
+                                        alpha: 0.34,
+                                      ),
                                     ),
                                   ),
-                                  const Text(
-                                    'Password required',
-                                    style: TextStyle(
-                                      color: AppColors.textMuted,
-                                      fontSize: 13,
-                                    ),
+                                  child: const Icon(
+                                    Icons.lock_rounded,
+                                    color: AppColors.accentPurple,
                                   ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        TextField(
-                          controller: passwordController,
-                          obscureText: obscurePassword,
-                          autofocus: true,
-                          onSubmitted: (_) => submit(),
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            errorText: errorText,
-                            filled: true,
-                            fillColor: AppColors.bgCardLight.withValues(
-                              alpha: 0.45,
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => setDialogState(() {
-                                obscurePassword = !obscurePassword;
-                              }),
-                              icon: Icon(
-                                obscurePassword
-                                    ? Icons.visibility_rounded
-                                    : Icons.visibility_off_rounded,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: AppColors.accentPurple,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: isLoading
-                                    ? null
-                                    : () => Navigator.of(dialogContext).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: isLoading ? null : submit,
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 180),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          key: ValueKey('loading'),
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Unlock',
-                                          key: ValueKey('unlock'),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        name,
+                                        style: const TextStyle(
+                                          color: AppColors.textPrimary,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w800,
                                         ),
+                                      ),
+                                      const Text(
+                                        'Password required',
+                                        style: TextStyle(
+                                          color: AppColors.textMuted,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 18),
+                            TextField(
+                              controller: passwordController,
+                              obscureText: obscurePassword,
+                              autofocus: true,
+                              onSubmitted: (_) => submit(),
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                errorText: errorText,
+                                filled: true,
+                                fillColor: AppColors.bgCardLight.withValues(
+                                  alpha: 0.45,
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: () => setDialogState(() {
+                                    obscurePassword = !obscurePassword;
+                                  }),
+                                  icon: Icon(
+                                    obscurePassword
+                                        ? Icons.visibility_rounded
+                                        : Icons.visibility_off_rounded,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.accentPurple,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 18),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: isLoading
+                                        ? null
+                                        : () =>
+                                              Navigator.of(dialogContext).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: isLoading ? null : submit,
+                                    child: AnimatedSwitcher(
+                                      duration: const Duration(
+                                        milliseconds: 180,
+                                      ),
+                                      child: isLoading
+                                          ? const SizedBox(
+                                              key: ValueKey('loading'),
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          : const Text(
+                                              'Unlock',
+                                              key: ValueKey('unlock'),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -381,30 +397,5 @@ class _UserSelectScreenState extends State<UserSelectScreen>
     );
 
     passwordController.dispose();
-    if (unlocked == true && mounted) {
-      _goHome();
-    }
-  }
-
-  void _goHome() {
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const HomeScreen(),
-        transitionsBuilder: (context, anim, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
-            child: SlideTransition(
-              position: Tween(
-                begin: const Offset(0, 0.05),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
-              child: child,
-            ),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 400),
-      ),
-    );
   }
 }
