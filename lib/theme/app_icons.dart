@@ -15,13 +15,13 @@ class AppIcons {
   };
 
   static const List<IconData> users = [
-    Icons.person_rounded,
-    Icons.badge_rounded,
-    Icons.school_rounded,
-    Icons.palette_rounded,
-    Icons.handyman_rounded,
-    Icons.code_rounded,
-    Icons.restaurant_rounded,
+    Icons.pets_rounded,
+    Icons.pets_outlined,
+    Icons.pets_sharp,
+    Icons.emoji_nature_rounded,
+    Icons.face_rounded,
+    Icons.mood_rounded,
+    Icons.favorite_rounded,
   ];
 
   static IconData task(String name) => tasks[name] ?? Icons.task_alt_rounded;
