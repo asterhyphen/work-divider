@@ -24,8 +24,7 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   /// Initialize from storage.
   Future<void> init() async {
     WidgetsBinding.instance.addObserver(this);
-    _currentUser = null;
-    await Storage.clearCurrentUser();
+    _currentUser = Storage.getCurrentUser();
     _currentWeek = ScheduleData.activeWeek;
     await syncNow();
     _remoteSync.startPolling(syncNow);
