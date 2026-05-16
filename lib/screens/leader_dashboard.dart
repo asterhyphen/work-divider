@@ -8,6 +8,7 @@ import 'package:meowdabattery/widgets/progress_ring.dart';
 import 'package:meowdabattery/widgets/confetti_overlay.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 import 'package:meowdabattery/widgets/sketch_background.dart';
+import 'package:meowdabattery/widgets/approval_list.dart';
 
 class LeaderDashboard extends StatefulWidget {
   const LeaderDashboard({super.key});
@@ -59,14 +60,7 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                                 '${pending.length}',
                               ),
                               const SizedBox(height: 12),
-                              ...pending.map(
-                                (p) => _buildApprovalCard(
-                                  context,
-                                  provider,
-                                  p['user']!,
-                                  p['task']!,
-                                ),
-                              ),
+                              ApprovalList(approvals: pending),
                               const SizedBox(height: 24),
                             ],
                             _sectionHeader(
@@ -368,101 +362,6 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                 );
               },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildApprovalCard(
-    BuildContext context,
-    AppProvider provider,
-    String user,
-    String task,
-  ) {
-    return GlassContainer(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      color: AppColors.bgCard,
-      borderRadius: BorderRadius.circular(14),
-      border: Border.all(
-        color: AppColors.accentOrange.withValues(alpha: 0.65),
-        width: 1.5,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.accentOrange.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: AppColors.accentOrange.withValues(alpha: 0.30),
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.hourglass_top_rounded,
-                  color: AppColors.accentOrange,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      task,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _actionButton(
-                  'Reject',
-                  AppColors.accentRed,
-                  () => _runAdminAction(
-                    context,
-                    () => provider.rejectTask(user, task),
-                    success: '$task rejected for $user.',
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _actionButton(
-                  'Approve',
-                  AppColors.accentGreen,
-                  () => _runAdminAction(
-                    context,
-                    () => provider.approveTask(user, task),
-                    success: '$task approved for $user.',
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
