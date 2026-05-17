@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/providers/app_provider.dart';
+import 'package:meowdabattery/screens/home_screen.dart';
 import 'package:meowdabattery/widgets/user_card.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 import 'package:meowdabattery/widgets/sketch_background.dart';
@@ -210,6 +211,23 @@ class _UserSelectScreenState extends State<UserSelectScreen>
                 await provider.selectUser(name);
                 if (!dialogContext.mounted) return;
                 Navigator.of(dialogContext).pop();
+                if (!context.mounted) return;
+                Navigator.of(context).pushReplacement(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const HomeScreen(),
+                    transitionsBuilder:
+                        (context, anim, secondaryAnimation, child) =>
+                            FadeTransition(
+                              opacity: CurvedAnimation(
+                                parent: anim,
+                                curve: Curves.easeOut,
+                              ),
+                              child: child,
+                            ),
+                    transitionDuration: const Duration(milliseconds: 260),
+                  ),
+                );
               } catch (error) {
                 if (!dialogContext.mounted) return;
                 setDialogState(() {
