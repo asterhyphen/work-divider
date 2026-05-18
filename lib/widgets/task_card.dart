@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
 import 'package:meowdabattery/models/task_status.dart';
-import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/theme/app_icons.dart';
 import 'package:meowdabattery/widgets/glass_container.dart';
 
@@ -19,6 +18,7 @@ class TaskCard extends StatefulWidget {
   final VoidCallback? onAction;
   final String? actionLabel;
   final bool isOverdue;
+  final String? completionMessage;
 
   const TaskCard({
     super.key,
@@ -31,6 +31,7 @@ class TaskCard extends StatefulWidget {
     this.onAction,
     this.actionLabel,
     this.isOverdue = false,
+    this.completionMessage,
   });
 
   @override
@@ -223,8 +224,7 @@ class _TaskCardState extends State<TaskCard>
                     ),
                   ),
                   child: Text(
-                    ScheduleData.completionMessages[_displayName] ??
-                        'Task completed!',
+                    widget.completionMessage ?? 'Task completed!',
                     style: TextStyle(
                       color: AppColors.accentGreen.withValues(alpha: 0.9),
                       fontSize: 13,

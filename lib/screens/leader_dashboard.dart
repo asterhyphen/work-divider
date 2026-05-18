@@ -77,6 +77,8 @@ class _LeaderDashboardState extends State<LeaderDashboard> {
                                 taskName: e.key,
                                 assignedTo: e.value,
                                 status: status,
+                                completionMessage: provider
+                                    .completionMessageFor(e.key),
                                 showUser: true,
                                 isOverdue:
                                     provider.isOverdue &&

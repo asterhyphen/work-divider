@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meowdabattery/data/schedule_data.dart';
+import 'package:meowdabattery/features/schedule/application/schedule_service.dart';
 import 'package:meowdabattery/models/task_status.dart';
 import 'package:meowdabattery/utils/remote_sync.dart';
 import 'package:meowdabattery/utils/storage.dart';
@@ -9,23 +9,28 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   String? _currentUser;
   int _currentWeek = 1;
   final RemoteSync _remoteSync = RemoteSync();
+  final ScheduleService _scheduleService;
+
+  AppProvider({ScheduleService? scheduleService})
+    : _scheduleService = scheduleService ?? ScheduleService.instance;
 
   String? get currentUser => _currentUser;
   int get currentWeek => _currentWeek;
   int get currentWeekNumber => _currentWeek;
+  List<String> get allUsers => _scheduleService.allUsers;
 
   bool get isLeader =>
       _currentUser != null &&
-      ScheduleData.isLeader(_currentUser!, _currentWeek);
+      _scheduleService.isLeader(_currentUser!, _currentWeek);
 
-  String get leaderName => ScheduleData.getLeader(_currentWeek);
-  String get adminName => ScheduleData.adminUser;
+  String get leaderName => _scheduleService.getLeader(_currentWeek);
+  String get adminName => _scheduleService.adminUser;
 
   /// Initialize from storage.
   Future<void> init() async {
     WidgetsBinding.instance.addObserver(this);
     _currentUser = Storage.getCurrentUser();
-    _currentWeek = ScheduleData.activeWeek;
+    _currentWeek = _scheduleService.currentWeekNumber();
     await syncNow();
     _remoteSync.startPolling(syncNow);
     notifyListeners();
@@ -48,7 +53,7 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   /// Get all tasks assigned to the current user this week.
   List<String> get myTasks {
     if (_currentUser == null) return [];
-    return ScheduleData.getUserTasks(_currentUser!, _currentWeek);
+    return _scheduleService.getUserTasks(_currentUser!, _currentWeek);
   }
 
   /// Get task status for a specific user and task.
@@ -80,7 +85,7 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
     await Storage.setTaskStatus(_currentWeek, user, task, 'approved');
 
     // Update streak
-    final tasks = ScheduleData.getUserTasks(user, _currentWeek);
+    final tasks = _scheduleService.getUserTasks(user, _currentWeek);
     final allApproved = tasks.every(
       (t) => getTaskStatus(user, t) == TaskStatus.approved,
     );
@@ -166,7 +171,7 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Get full assignments for the current week.
   Map<String, String> get fullAssignments =>
-      ScheduleData.getFullAssignments(_currentWeek);
+      _scheduleService.getFullAssignments(_currentWeek);
 
   /// Get all pending approvals for the leader.
   List<Map<String, String>> get pendingApprovals {
@@ -202,18 +207,26 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   /// Get streak for a user.
   int getStreak(String user) => Storage.getStreak(user);
 
+  bool isPasswordValid(String userName, String password) {
+    return _scheduleService.isPasswordValid(userName, password);
+  }
+
+  String completionMessageFor(String taskName) {
+    return _scheduleService.completionMessages[taskName] ?? 'Task completed!';
+  }
+
   /// Whether it's overdue.
-  bool get isOverdue => ScheduleData.isOverdue();
+  bool get isOverdue => _scheduleService.isOverdue();
 
   /// Get reminder level.
-  int get reminderLevel => ScheduleData.getReminderLevel();
+  int get reminderLevel => _scheduleService.getReminderLevel();
 
   /// Deadline status string.
-  String get deadlineStatus => ScheduleData.getDeadlineStatus();
+  String get deadlineStatus => _scheduleService.getDeadlineStatus();
 
   /// Refresh week number (in case day changed while app is open).
   void refreshWeek() {
-    final currentWeek = ScheduleData.activeWeek;
+    final currentWeek = _scheduleService.currentWeekNumber();
     if (_currentWeek == currentWeek) return;
     _currentWeek = currentWeek;
     notifyListeners();

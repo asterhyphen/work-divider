@@ -327,6 +327,8 @@ class _HomeScreenState extends State<HomeScreen>
                             child: TaskCard(
                               task: task,
                               status: status,
+                              completionMessage: appProvider
+                                  .completionMessageFor(task),
                               onStatusChange: () =>
                                   _showStatusDialog(context, appProvider, task),
                               onAction:

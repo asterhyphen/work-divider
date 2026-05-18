@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:meowdabattery/theme/app_theme.dart';
-import 'package:meowdabattery/data/schedule_data.dart';
 import 'package:meowdabattery/providers/app_provider.dart';
 import 'package:meowdabattery/screens/home_screen.dart';
 import 'package:meowdabattery/widgets/user_card.dart';
@@ -37,6 +36,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AppProvider>();
     final introCurve = CurvedAnimation(
       parent: _introController,
       curve: Curves.easeOutBack,
@@ -136,9 +136,9 @@ class _UserSelectScreenState extends State<UserSelectScreen>
                           mainAxisSpacing: 14,
                           childAspectRatio: 1.3,
                         ),
-                    itemCount: ScheduleData.allUsers.length,
+                    itemCount: provider.allUsers.length,
                     itemBuilder: (context, index) {
-                      final name = ScheduleData.allUsers[index];
+                      final name = provider.allUsers[index];
                       return UserCard(
                         name: name,
                         index: index,
@@ -156,7 +156,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
                     ),
                     borderRadius: BorderRadius.circular(12),
                     child: Text(
-                      'Week ${ScheduleData.getCurrentWeekNumber()} of 7 | Admin: ${ScheduleData.adminUser}',
+                      'Week ${provider.currentWeekNumber} of 7 | Admin: ${provider.adminName}',
                       style: const TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 13,
@@ -200,7 +200,7 @@ class _UserSelectScreenState extends State<UserSelectScreen>
               try {
                 await Future<void>.delayed(const Duration(milliseconds: 180));
                 if (!dialogContext.mounted) return;
-                if (!ScheduleData.isPasswordValid(name, password)) {
+                if (!provider.isPasswordValid(name, password)) {
                   setDialogState(() {
                     isLoading = false;
                     errorText = 'Wrong password for $name';
