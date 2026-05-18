@@ -4,7 +4,8 @@
 // Other Bathroom rotates ONLY: Wasiq, Asfan, Ayaan
 
 class ScheduleData {
-  static const int activeWeek = 1;
+  static const int anchorWeek = 2;
+  static final DateTime anchorMonday = DateTime(2026, 5, 18);
   static const String adminUser = 'Ahmed';
 
   static const List<String> allUsers = [
@@ -121,8 +122,20 @@ class ScheduleData {
     },
   ];
 
-  /// The app is pinned to Week 1 for now.
-  static int getCurrentWeekNumber() => activeWeek;
+  /// Current week rotates every Monday. May 18, 2026 is Week 2.
+  static int get activeWeek => getCurrentWeekNumber();
+
+  static int getCurrentWeekNumber({DateTime? now}) {
+    final currentMonday = _mondayFor(now ?? DateTime.now());
+    final weekOffset = currentMonday.difference(anchorMonday).inDays ~/ 7;
+    final weekIndex = (anchorWeek - 1 + weekOffset) % weeklySchedules.length;
+    return weekIndex + 1;
+  }
+
+  static DateTime _mondayFor(DateTime date) {
+    final dayOnly = DateTime(date.year, date.month, date.day);
+    return dayOnly.subtract(Duration(days: dayOnly.weekday - DateTime.monday));
+  }
 
   /// Get the schedule for a given week (1-7).
   static Map<String, String> getWeekSchedule(int weekNumber) {

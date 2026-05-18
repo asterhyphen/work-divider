@@ -11,8 +11,8 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   final RemoteSync _remoteSync = RemoteSync();
 
   String? get currentUser => _currentUser;
-  int get currentWeek => ScheduleData.activeWeek;
-  int get currentWeekNumber => ScheduleData.activeWeek;
+  int get currentWeek => _currentWeek;
+  int get currentWeekNumber => _currentWeek;
 
   bool get isLeader =>
       _currentUser != null &&
@@ -213,7 +213,9 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Refresh week number (in case day changed while app is open).
   void refreshWeek() {
-    _currentWeek = ScheduleData.activeWeek;
+    final currentWeek = ScheduleData.activeWeek;
+    if (_currentWeek == currentWeek) return;
+    _currentWeek = currentWeek;
     notifyListeners();
   }
 
@@ -227,6 +229,7 @@ class AppProvider extends ChangeNotifier with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      refreshWeek();
       syncNow();
     }
   }
