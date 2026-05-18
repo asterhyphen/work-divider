@@ -39,13 +39,13 @@ class ScheduleData {
   };
 
   static const Map<String, String> completionMessages = {
-    'Main Bathroom': 'Bathroom survived another war.',
-    'Other Bathroom': 'Fresh and clean. Victory!',
-    'Big Hall': 'Hall shining like moonlight.',
+    'Main Bathroom': '404 Error: Dirt Not Found.',
+    'Other Bathroom': 'Side bathroom, more like SHINE bathroom.',
+    'Big Hall': 'Cant differentiate the hall from the moon.',
     'Side Hall': 'Side hall? More like SHINE hall.',
-    'Kitchen': 'Kitchen conquered.',
-    'Outside 1': 'The great outdoors cleaned.',
-    'Outside 2': 'Leading AND cleaning. Respect.',
+    'Kitchen': 'Swish Wish Dish.',
+    'Outside 1': 'Outdoor chore, shining floor.',
+    'Outside 2': 'Leader of the week, what does thy seek?',
   };
 
   /// Each week: the `leader` field is the Outside 2 assignment.
